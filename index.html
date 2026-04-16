@@ -1,0 +1,409 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Descubre qué necesita tu cuerpo hoy ✨</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400&family=Jost:wght@300;400;500;600&display=swap" rel="stylesheet">
+
+<style>
+  :root {
+    --cream:   #FAF7F2;
+    --beige:   #F0E9DF;
+    --sand:    #E2D5C3;
+    --mocha:   #A08060;
+    --mocha-d: #7A5F43;
+    --bark:    #4A3728;
+    --white:   #FFFFFF;
+    --text:    #3A2E26;
+    --text-m:  #7A6A5A;
+    --green:   #6B8F71;
+    --radius:  18px;
+    --shadow:  0 8px 40px rgba(100,70,40,.10);
+    --shadow-s:0 2px 12px rgba(100,70,40,.08);
+  }
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+  body {
+    font-family: 'Jost', sans-serif;
+    background: var(--cream);
+    color: var(--text);
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.03'/%3E%3C/svg%3E");
+    opacity: .4;
+    pointer-events: none;
+    z-index: 0;
+  }
+  .app {
+    position: relative;
+    z-index: 1;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 0 16px 40px;
+  }
+  .progress-wrap {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    height: 3px;
+    background: var(--sand);
+    z-index: 100;
+  }
+  .progress-bar {
+    height: 100%;
+    background: linear-gradient(90deg, var(--mocha), var(--mocha-d));
+    transition: width .5s cubic-bezier(.4,0,.2,1);
+    width: 0%;
+  }
+  .deco { position: fixed; border-radius: 50%; pointer-events: none; z-index: 0; }
+  .deco-1 { width: 400px; height: 400px; background: radial-gradient(circle, rgba(160,128,96,.12), transparent 70%); top: -100px; right: -100px; }
+  .deco-2 { width: 300px; height: 300px; background: radial-gradient(circle, rgba(107,143,113,.10), transparent 70%); bottom: 0; left: -80px; }
+  .card {
+    background: rgba(255,255,255,.82);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border-radius: 28px;
+    border: 1px solid rgba(255,255,255,.9);
+    box-shadow: var(--shadow);
+    width: 100%;
+    max-width: 520px;
+    margin-top: 48px;
+    padding: 44px 40px 40px;
+    position: relative;
+    z-index: 1;
+  }
+  .screen { display: none; animation: fadeUp .55s cubic-bezier(.4,0,.2,1) forwards; }
+  .screen.active { display: block; }
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(22px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+  .brand { display: flex; align-items: center; gap: 8px; margin-bottom: 32px; }
+  .brand-leaf { font-size: 22px; line-height: 1; }
+  .brand-name { font-family: 'Cormorant Garamond', serif; font-size: 15px; font-weight: 400; letter-spacing: .12em; color: var(--mocha); text-transform: uppercase; }
+  .welcome-tag { display: inline-block; background: var(--beige); border: 1px solid var(--sand); border-radius: 100px; padding: 5px 14px; font-size: 11px; font-weight: 500; letter-spacing: .12em; text-transform: uppercase; color: var(--mocha-d); margin-bottom: 20px; }
+  .welcome-title { font-family: 'Cormorant Garamond', serif; font-size: 38px; line-height: 1.15; font-weight: 300; color: var(--bark); margin-bottom: 14px; }
+  .welcome-title em { font-style: italic; color: var(--mocha); }
+  .welcome-sub { font-size: 15px; line-height: 1.7; color: var(--text-m); font-weight: 300; margin-bottom: 34px; }
+  .features { display: flex; flex-direction: column; gap: 10px; margin-bottom: 36px; }
+  .feature-row { display: flex; align-items: center; gap: 10px; font-size: 14px; color: var(--text-m); font-weight: 300; }
+  .feature-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--mocha); flex-shrink: 0; }
+  .divider { height: 1px; background: var(--sand); margin: 28px 0; opacity: .6; }
+  .time-note { text-align: center; font-size: 12px; color: var(--text-m); font-weight: 300; letter-spacing: .05em; margin-bottom: 24px; }
+  .q-meta { display: flex; justify-content: space-between; align-items: center; margin-bottom: 26px; }
+  .q-step { font-size: 11px; font-weight: 500; letter-spacing: .14em; text-transform: uppercase; color: var(--mocha); }
+  .q-number { font-size: 11px; color: var(--text-m); font-weight: 300; }
+  .q-title { font-family: 'Cormorant Garamond', serif; font-size: 24px; font-weight: 400; line-height: 1.35; color: var(--bark); margin-bottom: 24px; }
+  .options { display: flex; flex-direction: column; gap: 10px; margin-bottom: 28px; }
+  .option-btn { display: flex; align-items: center; gap: 14px; padding: 14px 18px; border: 1.5px solid var(--sand); border-radius: var(--radius); background: transparent; cursor: pointer; text-align: left; font-family: 'Jost', sans-serif; font-size: 14.5px; font-weight: 300; color: var(--text); transition: all .22s ease; position: relative; overflow: hidden; }
+  .option-btn::before { content: ''; position: absolute; inset: 0; background: linear-gradient(135deg, var(--beige), var(--cream)); opacity: 0; transition: opacity .22s ease; }
+  .option-btn:hover::before { opacity: 1; }
+  .option-btn:hover { border-color: var(--mocha); transform: translateX(3px); }
+  .option-btn.selected { border-color: var(--mocha-d); background: linear-gradient(135deg, var(--beige), rgba(224,213,195,.4)); color: var(--bark); font-weight: 400; transform: translateX(3px); }
+  .option-btn.selected::before { opacity: 0; }
+  .option-check { width: 20px; height: 20px; border-radius: 50%; border: 1.5px solid var(--sand); display: flex; align-items: center; justify-content: center; flex-shrink: 0; font-size: 10px; color: transparent; transition: all .22s ease; position: relative; z-index: 1; }
+  .option-btn.selected .option-check { background: var(--mocha-d); border-color: var(--mocha-d); color: white; }
+  .option-label { position: relative; z-index: 1; }
+  .option-emoji { font-size: 16px; position: relative; z-index: 1; }
+  .diag-header { text-align: center; margin-bottom: 30px; padding-bottom: 24px; border-bottom: 1px solid var(--sand); }
+  .diag-badge { display: inline-flex; align-items: center; gap: 6px; background: linear-gradient(135deg, var(--beige), var(--sand)); border-radius: 100px; padding: 6px 16px; font-size: 11px; font-weight: 500; letter-spacing: .12em; text-transform: uppercase; color: var(--mocha-d); margin-bottom: 18px; }
+  .diag-title { font-family: 'Cormorant Garamond', serif; font-size: 30px; font-weight: 400; color: var(--bark); line-height: 1.2; margin-bottom: 8px; }
+  .diag-subtitle { font-size: 13px; color: var(--text-m); font-weight: 300; }
+  .diag-section { background: var(--beige); border-radius: 16px; padding: 20px 22px; margin-bottom: 14px; border: 1px solid rgba(226,213,195,.6); }
+  .diag-section-title { display: flex; align-items: center; gap: 8px; font-size: 11px; font-weight: 600; letter-spacing: .12em; text-transform: uppercase; color: var(--mocha-d); margin-bottom: 10px; }
+  .diag-section-icon { font-size: 15px; }
+  .diag-text { font-size: 14px; line-height: 1.75; color: var(--text); font-weight: 300; }
+  .diag-text strong { font-weight: 500; color: var(--bark); }
+  .cta-box { background: linear-gradient(135deg, var(--bark), var(--mocha-d)); border-radius: 20px; padding: 28px 24px; margin: 24px 0 20px; text-align: center; }
+  .cta-box-title { font-family: 'Cormorant Garamond', serif; font-size: 20px; font-weight: 400; color: var(--cream); line-height: 1.35; margin-bottom: 6px; }
+  .cta-box-sub { font-size: 13px; color: rgba(250,247,242,.7); font-weight: 300; margin-bottom: 22px; line-height: 1.6; }
+  .btn-primary { display: block; width: 100%; padding: 16px 24px; background: linear-gradient(135deg, var(--bark), var(--mocha-d)); color: var(--cream); border: none; border-radius: var(--radius); font-family: 'Jost', sans-serif; font-size: 14px; font-weight: 500; letter-spacing: .08em; cursor: pointer; transition: all .25s ease; box-shadow: 0 4px 20px rgba(74,55,40,.25); text-align: center; text-decoration: none; }
+  .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 8px 28px rgba(74,55,40,.3); }
+  .btn-primary:active { transform: translateY(0); }
+  .btn-secondary { display: block; width: 100%; padding: 14px 24px; background: transparent; color: var(--text-m); border: 1.5px solid var(--sand); border-radius: var(--radius); font-family: 'Jost', sans-serif; font-size: 14px; font-weight: 400; cursor: pointer; transition: all .25s ease; text-align: center; }
+  .btn-secondary:hover { border-color: var(--mocha); color: var(--mocha-d); }
+  .btn-wa { display: flex; align-items: center; justify-content: center; gap: 10px; width: 100%; padding: 15px 24px; background: #25D366; color: white; border: none; border-radius: var(--radius); font-family: 'Jost', sans-serif; font-size: 14px; font-weight: 500; cursor: pointer; transition: all .25s ease; box-shadow: 0 4px 20px rgba(37,211,102,.28); text-decoration: none; margin-bottom: 12px; }
+  .btn-wa:hover { transform: translateY(-2px); box-shadow: 0 8px 28px rgba(37,211,102,.38); background: #22c55e; }
+  .btn-back { background: none; border: none; color: var(--text-m); font-family: 'Jost', sans-serif; font-size: 13px; font-weight: 300; cursor: pointer; padding: 8px 0; display: flex; align-items: center; gap: 6px; transition: color .2s ease; margin-bottom: 16px; }
+  .btn-back:hover { color: var(--mocha-d); }
+  .btn-next-row { display: flex; flex-direction: column; gap: 10px; margin-top: 4px; }
+  .disclaimer { margin-top: 18px; padding: 14px 18px; background: var(--beige); border-radius: 12px; border-left: 3px solid var(--sand); font-size: 11.5px; color: var(--text-m); font-weight: 300; line-height: 1.65; }
+  .thankyou-center { text-align: center; }
+  .thankyou-icon { font-size: 52px; margin-bottom: 20px; }
+  .thankyou-title { font-family: 'Cormorant Garamond', serif; font-size: 30px; font-weight: 400; color: var(--bark); margin-bottom: 12px; }
+  .thankyou-sub { font-size: 15px; color: var(--text-m); font-weight: 300; line-height: 1.7; }
+  .loading-screen { text-align: center; padding: 20px 0; }
+  .loading-title { font-family: 'Cormorant Garamond', serif; font-size: 24px; color: var(--bark); margin-bottom: 8px; }
+  .loading-sub { font-size: 13px; color: var(--text-m); font-weight: 300; margin-bottom: 32px; }
+  .dots { display: flex; justify-content: center; gap: 8px; }
+  .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--mocha); animation: dotPulse 1.4s ease-in-out infinite; }
+  .dot:nth-child(2) { animation-delay: .2s; }
+  .dot:nth-child(3) { animation-delay: .4s; }
+  @keyframes dotPulse { 0%,80%,100% { transform: scale(.7); opacity: .4; } 40% { transform: scale(1); opacity: 1; } }
+  .footer { margin-top: 24px; text-align: center; font-size: 11px; color: var(--text-m); font-weight: 300; opacity: .6; letter-spacing: .05em; }
+  @media (max-width: 520px) {
+    .card { padding: 32px 24px 28px; margin-top: 36px; border-radius: 22px; }
+    .welcome-title { font-size: 32px; }
+    .q-title { font-size: 21px; }
+  }
+</style>
+</head>
+<body>
+<div class="deco deco-1"></div>
+<div class="deco deco-2"></div>
+<div class="progress-wrap"><div class="progress-bar" id="progressBar"></div></div>
+<div class="app">
+<div class="card">
+  <div class="brand"><span class="brand-leaf">🌿</span><span class="brand-name">Bienestar Natural</span></div>
+
+  <div class="screen active" id="screen-0">
+    <span class="welcome-tag">✦ Evaluación de bienestar</span>
+    <h1 class="welcome-title">Descubre qué necesita<br><em>tu cuerpo hoy</em> ✨</h1>
+    <p class="welcome-sub">Responde estas preguntas y recibe una orientación personalizada sobre tu salud con recomendaciones de hábitos y productos naturales.</p>
+    <div class="features">
+      <div class="feature-row"><span class="feature-dot"></span>6 preguntas sencillas y visuales</div>
+      <div class="feature-row"><span class="feature-dot"></span>Diagnóstico personalizado al instante</div>
+      <div class="feature-row"><span class="feature-dot"></span>Recomendaciones naturales y de hábitos</div>
+      <div class="feature-row"><span class="feature-dot"></span>100% gratuito · Sin compromiso</div>
+    </div>
+    <div class="divider"></div>
+    <p class="time-note">⏱ Solo toma 2 minutos</p>
+    <button class="btn-primary" onclick="goTo(1)">Comenzar mi evaluación →</button>
+  </div>
+
+  <div class="screen" id="screen-1">
+    <button class="btn-back" onclick="goTo(0)">← Volver</button>
+    <div class="q-meta"><span class="q-step">Pregunta 1 de 6</span><span class="q-number">17%</span></div>
+    <h2 class="q-title">Si pudieras mejorar algo de tu salud hoy, ¿qué sería?</h2>
+    <div class="options" id="opts-1">
+      <button class="option-btn" onclick="select(1,'Más energía','⚡')"><span class="option-check">✓</span><span class="option-emoji">⚡</span><span class="option-label">Más energía</span></button>
+      <button class="option-btn" onclick="select(1,'Mejor digestión','🌿')"><span class="option-check">✓</span><span class="option-emoji">🌿</span><span class="option-label">Mejor digestión</span></button>
+      <button class="option-btn" onclick="select(1,'Dormir mejor','🌙')"><span class="option-check">✓</span><span class="option-emoji">🌙</span><span class="option-label">Dormir mejor</span></button>
+      <button class="option-btn" onclick="select(1,'Bajar de peso','🍃')"><span class="option-check">✓</span><span class="option-emoji">🍃</span><span class="option-label">Bajar de peso</span></button>
+      <button class="option-btn" onclick="select(1,'Reducir ansiedad','🧘')"><span class="option-check">✓</span><span class="option-emoji">🧘</span><span class="option-label">Reducir ansiedad</span></button>
+      <button class="option-btn" onclick="select(1,'Desinflamar el abdomen','💛')"><span class="option-check">✓</span><span class="option-emoji">💛</span><span class="option-label">Desinflamar el abdomen</span></button>
+    </div>
+    <div class="btn-next-row"><button class="btn-primary" id="next-1" onclick="goTo(2)" disabled style="opacity:.4;cursor:not-allowed">Continuar →</button></div>
+  </div>
+
+  <div class="screen" id="screen-2">
+    <button class="btn-back" onclick="goTo(1)">← Volver</button>
+    <div class="q-meta"><span class="q-step">Pregunta 2 de 6</span><span class="q-number">33%</span></div>
+    <h2 class="q-title">¿Cómo te sientes la mayor parte del día?</h2>
+    <div class="options" id="opts-2">
+      <button class="option-btn" onclick="select(2,'Con energía','☀️')"><span class="option-check">✓</span><span class="option-emoji">☀️</span><span class="option-label">Con energía</span></button>
+      <button class="option-btn" onclick="select(2,'Cansada/o','😔')"><span class="option-check">✓</span><span class="option-emoji">😔</span><span class="option-label">Cansada/o</span></button>
+      <button class="option-btn" onclick="select(2,'Inflamada/o','🤕')"><span class="option-check">✓</span><span class="option-emoji">🤕</span><span class="option-label">Inflamada/o</span></button>
+      <button class="option-btn" onclick="select(2,'Estresada/o','😤')"><span class="option-check">✓</span><span class="option-emoji">😤</span><span class="option-label">Estresada/o</span></button>
+      <button class="option-btn" onclick="select(2,'Con antojos constantes','🍫')"><span class="option-check">✓</span><span class="option-emoji">🍫</span><span class="option-label">Con antojos constantes</span></button>
+    </div>
+    <div class="btn-next-row"><button class="btn-primary" id="next-2" onclick="goTo(3)" disabled style="opacity:.4;cursor:not-allowed">Continuar →</button></div>
+  </div>
+
+  <div class="screen" id="screen-3">
+    <button class="btn-back" onclick="goTo(2)">← Volver</button>
+    <div class="q-meta"><span class="q-step">Pregunta 3 de 6</span><span class="q-number">50%</span></div>
+    <h2 class="q-title">¿Cómo es tu digestión?</h2>
+    <div class="options" id="opts-3">
+      <button class="option-btn" onclick="select(3,'Excelente','✨')"><span class="option-check">✓</span><span class="option-emoji">✨</span><span class="option-label">Excelente</span></button>
+      <button class="option-btn" onclick="select(3,'Lenta','🐢')"><span class="option-check">✓</span><span class="option-emoji">🐢</span><span class="option-label">Lenta</span></button>
+      <button class="option-btn" onclick="select(3,'Con estreñimiento','😣')"><span class="option-check">✓</span><span class="option-emoji">😣</span><span class="option-label">Con estreñimiento</span></button>
+      <button class="option-btn" onclick="select(3,'Con inflamación frecuente','💢')"><span class="option-check">✓</span><span class="option-emoji">💢</span><span class="option-label">Con inflamación frecuente</span></button>
+    </div>
+    <div class="btn-next-row"><button class="btn-primary" id="next-3" onclick="goTo(4)" disabled style="opacity:.4;cursor:not-allowed">Continuar →</button></div>
+  </div>
+
+  <div class="screen" id="screen-4">
+    <button class="btn-back" onclick="goTo(3)">← Volver</button>
+    <div class="q-meta"><span class="q-step">Pregunta 4 de 6</span><span class="q-number">67%</span></div>
+    <h2 class="q-title">¿Con qué frecuencia sientes ansiedad por comer?</h2>
+    <div class="options" id="opts-4">
+      <button class="option-btn" onclick="select(4,'Nunca','🙌')"><span class="option-check">✓</span><span class="option-emoji">🙌</span><span class="option-label">Nunca</span></button>
+      <button class="option-btn" onclick="select(4,'A veces','🤔')"><span class="option-check">✓</span><span class="option-emoji">🤔</span><span class="option-label">A veces</span></button>
+      <button class="option-btn" onclick="select(4,'Frecuentemente','😰')"><span class="option-check">✓</span><span class="option-emoji">😰</span><span class="option-label">Frecuentemente</span></button>
+      <button class="option-btn" onclick="select(4,'Todos los días','😓')"><span class="option-check">✓</span><span class="option-emoji">😓</span><span class="option-label">Todos los días</span></button>
+    </div>
+    <div class="btn-next-row"><button class="btn-primary" id="next-4" onclick="goTo(5)" disabled style="opacity:.4;cursor:not-allowed">Continuar →</button></div>
+  </div>
+
+  <div class="screen" id="screen-5">
+    <button class="btn-back" onclick="goTo(4)">← Volver</button>
+    <div class="q-meta"><span class="q-step">Pregunta 5 de 6</span><span class="q-number">83%</span></div>
+    <h2 class="q-title">¿Cómo calificas tu descanso nocturno?</h2>
+    <div class="options" id="opts-5">
+      <button class="option-btn" onclick="select(5,'Muy bueno','😴')"><span class="option-check">✓</span><span class="option-emoji">😴</span><span class="option-label">Muy bueno</span></button>
+      <button class="option-btn" onclick="select(5,'Regular','😑')"><span class="option-check">✓</span><span class="option-emoji">😑</span><span class="option-label">Regular</span></button>
+      <button class="option-btn" onclick="select(5,'Malo','😩')"><span class="option-check">✓</span><span class="option-emoji">😩</span><span class="option-label">Malo</span></button>
+    </div>
+    <div class="btn-next-row"><button class="btn-primary" id="next-5" onclick="goTo(6)" disabled style="opacity:.4;cursor:not-allowed">Continuar →</button></div>
+  </div>
+
+  <div class="screen" id="screen-6">
+    <button class="btn-back" onclick="goTo(5)">← Volver</button>
+    <div class="q-meta"><span class="q-step">Pregunta 6 de 6</span><span class="q-number">100%</span></div>
+    <h2 class="q-title">¿Estás abierta/o a mejorar tu salud con productos naturales?</h2>
+    <div class="options" id="opts-6">
+      <button class="option-btn" onclick="select(6,'Sí, estoy abierta/o','💚')"><span class="option-check">✓</span><span class="option-emoji">💚</span><span class="option-label">Sí, estoy abierta/o</span></button>
+      <button class="option-btn" onclick="select(6,'Tal vez','🤍')"><span class="option-check">✓</span><span class="option-emoji">🤍</span><span class="option-label">Tal vez</span></button>
+      <button class="option-btn" onclick="select(6,'No por ahora','🤎')"><span class="option-check">✓</span><span class="option-emoji">🤎</span><span class="option-label">No por ahora</span></button>
+    </div>
+    <div class="btn-next-row"><button class="btn-primary" id="next-6" onclick="showLoading()" disabled style="opacity:.4;cursor:not-allowed">Ver mi diagnóstico →</button></div>
+  </div>
+
+  <div class="screen" id="screen-loading">
+    <div class="loading-screen">
+      <p style="font-size:40px;margin-bottom:16px">🔍</p>
+      <h2 class="loading-title">Analizando tus respuestas…</h2>
+      <p class="loading-sub">Preparando tu orientación personalizada</p>
+      <div class="dots"><div class="dot"></div><div class="dot"></div><div class="dot"></div></div>
+    </div>
+  </div>
+
+  <div class="screen" id="screen-diagnosis">
+    <div class="diag-header">
+      <div class="diag-badge">🌿 Tu orientación personalizada</div>
+      <h2 class="diag-title">Este es tu perfil<br>de bienestar</h2>
+      <p class="diag-subtitle">Basado en tus respuestas — orientación general de salud</p>
+    </div>
+    <div class="diag-section"><div class="diag-section-title"><span class="diag-section-icon">📋</span> Estado general</div><p class="diag-text" id="diag-resumen-text"></p></div>
+    <div class="diag-section"><div class="diag-section-title"><span class="diag-section-icon">🔎</span> Posibles causas</div><p class="diag-text" id="diag-causas-text"></p></div>
+    <div class="diag-section"><div class="diag-section-title"><span class="diag-section-icon">✨</span> Recomendaciones de hábitos</div><p class="diag-text" id="diag-habitos-text"></p></div>
+    <div class="diag-section"><div class="diag-section-title"><span class="diag-section-icon">🌿</span> Apoyo con productos naturales</div><p class="diag-text" id="diag-productos-text"></p></div>
+    <div class="cta-box">
+      <h3 class="cta-box-title">Según tus respuestas, puedo<br>ayudarte a mejorar tu salud<br>de forma natural 💚</h3>
+      <p class="cta-box-sub">¿Te gustaría recibir una asesoría personalizada con recomendaciones específicas para ti?</p>
+      <a class="btn-wa" id="btn-wa-si" href="#">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="white"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+        Sí, quiero asesoría personalizada
+      </a>
+      <button class="btn-secondary" onclick="showThankyouNo()" style="border-color:rgba(255,255,255,.2);color:rgba(250,247,242,.6)">No por ahora</button>
+    </div>
+    <div class="disclaimer">⚠️ <strong>Aviso importante:</strong> Esta orientación es de carácter informativo y general. No reemplaza la consulta médica profesional ni constituye un diagnóstico clínico. Ante cualquier condición de salud, consulta a tu médico o especialista.</div>
+  </div>
+
+  <div class="screen" id="screen-thanks">
+    <div class="thankyou-center">
+      <div class="thankyou-icon">🌿</div>
+      <h2 class="thankyou-title">¡Gracias por tu tiempo!</h2>
+      <p class="thankyou-sub">Recuerda que cada pequeño paso hacia tu bienestar cuenta. Si en algún momento decides dar ese siguiente paso, estaremos aquí para acompañarte. 💚</p>
+      <div style="margin-top:32px"><button class="btn-secondary" onclick="restart()">Reiniciar encuesta</button></div>
+    </div>
+  </div>
+
+</div>
+<p class="footer">© 2025 · Bienestar Natural · Karen · <a href="https://wa.me/573226516161" style="color:inherit;text-decoration:none">📱 +57 322 651 6161</a></p>
+</div>
+
+<script>
+const answers = {};
+const TOTAL_QUESTIONS = 6;
+const WA_NUMBER = '573226516161';
+function goTo(n) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById('screen-' + n).classList.add('active');
+  updateProgress(n);
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+function updateProgress(step) {
+  const pct = step === 0 ? 0 : step === 'loading' || step === 'diagnosis' || step === 'thanks' ? 100 : Math.round((step / TOTAL_QUESTIONS) * 100);
+  document.getElementById('progressBar').style.width = pct + '%';
+}
+function select(q, val, emoji) {
+  answers[q] = { val, emoji };
+  document.querySelectorAll('#opts-' + q + ' .option-btn').forEach(b => b.classList.remove('selected'));
+  event.currentTarget.classList.add('selected');
+  const btn = document.getElementById('next-' + q);
+  btn.disabled = false;
+  btn.style.opacity = '1';
+  btn.style.cursor = 'pointer';
+}
+function showLoading() {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById('screen-loading').classList.add('active');
+  updateProgress('loading');
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+  setTimeout(() => { buildDiagnosis(); showDiagnosis(); }, 2600);
+}
+function showDiagnosis() {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById('screen-diagnosis').classList.add('active');
+  updateProgress('diagnosis');
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+function buildDiagnosis() {
+  const a1 = answers[1]?.val || '';
+  const a2 = answers[2]?.val || '';
+  const a3 = answers[3]?.val || '';
+  const a4 = answers[4]?.val || '';
+  const a5 = answers[5]?.val || '';
+  const a6 = answers[6]?.val || '';
+  const tired = a2.includes('Cansad') || a5 === 'Malo' || a5 === 'Regular';
+  const inflamed = a2.includes('Inflam') || a3.includes('inflam') || a1.includes('Desinflamar');
+  const digWeak = a3.includes('Lenta') || a3.includes('estreñ') || a3.includes('inflam');
+  const anxious = a4.includes('Frecuent') || a4.includes('Todos');
+  const weightGoal = a1.includes('Bajar');
+  const energyGoal = a1.includes('Más energía');
+  const sleepGoal = a1.includes('Dormir') || a5 === 'Malo';
+  let resumen = '';
+  if (tired && inflamed) resumen = 'Tu cuerpo muestra señales de <strong>fatiga crónica combinada con inflamación sistémica</strong>. Esto es muy común en personas con ritmos de vida acelerados y puede afectar tu energía, digestión y estado emocional simultáneamente.';
+  else if (tired && !inflamed) resumen = 'Tu perfil indica un <strong>agotamiento físico y mental importante</strong>. La falta de descanso de calidad y los niveles de energía bajos son señales de que tu cuerpo necesita apoyo para recuperar su vitalidad natural.';
+  else if (inflamed && !tired) resumen = 'Tu cuerpo presenta <strong>señales claras de inflamación intestinal y digestiva</strong>. Aunque tu energía puede estar relativamente bien, la inflamación silenciosa puede afectar tu peso, humor y sistema inmune con el tiempo.';
+  else if (anxious) resumen = 'Tu patrón principal refleja <strong>desbalance en los niveles de cortisol y glucosa en sangre</strong>, lo que se manifiesta como ansiedad por la comida, cambios de ánimo y dificultad para mantener hábitos estables.';
+  else resumen = 'Tu perfil muestra un <strong>estado general relativamente bueno</strong>, aunque con algunas áreas de mejora. Con los apoyos adecuados, podrías optimizar tu bienestar y llevar tu salud al siguiente nivel.';
+  const cauList = [];
+  if (digWeak) cauList.push('desequilibrio en la microbiota intestinal');
+  if (tired) cauList.push('posible déficit de micronutrientes esenciales (magnesio, hierro, vitamina B)');
+  if (anxious) cauList.push('fluctuaciones en los niveles de glucosa que generan ansiedad por carbohidratos');
+  if (sleepGoal) cauList.push('alteraciones en el ritmo circadiano y bajos niveles de melatonina o GABA');
+  if (inflamed) cauList.push('consumo de alimentos proinflamatorios o sensibilidades alimenticias no detectadas');
+  if (cauList.length === 0) cauList.push('hábitos cotidianos que con pequeños ajustes pueden optimizarse significativamente');
+  const causas = 'Basándome en tu perfil, los factores que posiblemente contribuyen incluyen: <strong>' + cauList.join('</strong>, <strong>') + '</strong>. Recuerda que estos son indicadores generales y no un diagnóstico clínico.';
+  const hab = [];
+  if (tired || sleepGoal) hab.push('🌙 Establece una rutina de sueño fija — acuéstate y levántate a la misma hora todos los días');
+  if (digWeak || inflamed) hab.push('🥗 Incorpora alimentos fermentados (kéfir, chucrut) y reduce el consumo de azúcares refinados y harinas blancas');
+  if (anxious) hab.push('⏰ Come cada 3-4 horas para estabilizar la glucosa y reducir los episodios de ansiedad por comida');
+  if (energyGoal || tired) hab.push('💧 Asegúrate de hidratarte bien: 8 vasos de agua al día, preferiblemente en la mañana en ayunas');
+  if (weightGoal) hab.push('🚶 Incorpora 30 minutos de movimiento diario — incluso caminatas suaves tienen un gran impacto metabólico');
+  hab.push('🧘 Dedica 10 minutos al día a técnicas de respiración o mindfulness para reducir el cortisol');
+  const prod = [];
+  if (digWeak || inflamed) prod.push('<strong>Probióticos y prebióticos naturales</strong> para restaurar el equilibrio de tu microbiota');
+  if (tired || energyGoal) prod.push('<strong>Complejo de vitaminas B + magnesio</strong> para apoyar la producción de energía celular');
+  if (anxious) prod.push('<strong>Adaptógenos naturales</strong> como ashwagandha o valeriana para regular el cortisol y la ansiedad');
+  if (sleepGoal) prod.push('<strong>Melatonina o extracto de pasiflora</strong> para mejorar la calidad del sueño de forma natural');
+  if (inflamed || weightGoal) prod.push('<strong>Cúrcuma con pimienta negra</strong> — potente antiinflamatorio natural que apoya el metabolismo');
+  if (weightGoal) prod.push('<strong>Proteína vegetal de alta calidad</strong> para aumentar la saciedad y conservar masa muscular');
+  if (prod.length === 0) prod.push('<strong>Antioxidantes naturales</strong> y adaptógenos para optimizar y mantener tu bienestar general');
+  document.getElementById('diag-resumen-text').innerHTML = resumen;
+  document.getElementById('diag-causas-text').innerHTML = causas;
+  document.getElementById('diag-habitos-text').innerHTML = hab.join('<br><br>');
+  document.getElementById('diag-productos-text').innerHTML = 'Para complementar los hábitos saludables, estos productos naturales podrían ser un gran apoyo:<br><br>' + prod.join('<br>');
+  const summary = ['*Mis respuestas:*','1️⃣ Quiero mejorar: '+a1,'2️⃣ Me siento: '+a2,'3️⃣ Digestión: '+a3,'4️⃣ Ansiedad por comer: '+a4,'5️⃣ Descanso: '+a5,'6️⃣ Productos naturales: '+a6,'','*Mi orientación personalizada:*',resumen.replace(/<[^>]+>/g,''),'','_Me gustaría recibir asesoría personalizada._ 🌿'].join('\n');
+  document.getElementById('btn-wa-si').href = 'https://wa.me/' + WA_NUMBER + '?text=' + encodeURIComponent('Hola Karen, acabo de hacer la encuesta de bienestar y este fue mi resultado:\n\n' + summary);
+}
+function showThankyouNo() {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById('screen-thanks').classList.add('active');
+  updateProgress('thanks');
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+function restart() {
+  Object.keys(answers).forEach(k => delete answers[k]);
+  document.querySelectorAll('.option-btn').forEach(b => b.classList.remove('selected'));
+  for (let i = 1; i <= TOTAL_QUESTIONS; i++) {
+    const btn = document.getElementById('next-' + i);
+    if (btn) { btn.disabled = true; btn.style.opacity = '.4'; btn.style.cursor = 'not-allowed'; }
+  }
+  goTo(0);
+}
+</script>
+</body>
+</html>
