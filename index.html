@@ -387,7 +387,7 @@ function buildDiagnosis() {
   document.getElementById('diag-habitos-text').innerHTML = hab.join('<br><br>');
   document.getElementById('diag-productos-text').innerHTML = 'Para complementar los hábitos saludables, estos productos naturales podrían ser un gran apoyo:<br><br>' + prod.join('<br>');
   const summary = ['*Mis respuestas:*','1️⃣ Quiero mejorar: '+a1,'2️⃣ Me siento: '+a2,'3️⃣ Digestión: '+a3,'4️⃣ Ansiedad por comer: '+a4,'5️⃣ Descanso: '+a5,'6️⃣ Productos naturales: '+a6,'','*Mi orientación personalizada:*',resumen.replace(/<[^>]+>/g,''),'','_Me gustaría recibir asesoría personalizada._ 🌿'].join('\n');
-  document.getElementById('btn-wa-si').href = 'https://wa.me/' + WA_NUMBER + '?text=' + encodeURIComponent('Hola Karen, acabo de hacer la encuesta de bienestar y este fue mi resultado:\n\n' + summary);
+  document.getElementById('btn-wa-si').href = 'https://wa.me/' + WA_NUMBER + '?text=' + encodeURIComponent('Hola, acabo de hacer la encuesta de bienestar y este fue mi resultado:\n\n' + summary);
 }
 function showThankyouNo() {
   document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
