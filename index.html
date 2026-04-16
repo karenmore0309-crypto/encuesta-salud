@@ -306,7 +306,8 @@
 <script>
 const answers = {};
 const TOTAL_QUESTIONS = 6;
-const WA_NUMBER = '573226516161';
+const params = new URLSearchParams(window.location.search);
+const WA_NUMBER = params.get("wa") || '573226516161';
 function goTo(n) {
   document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
   document.getElementById('screen-' + n).classList.add('active');
